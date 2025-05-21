@@ -2,6 +2,12 @@ name: build_apk
 
 # action事件触发
 on:
+    workflow_dispatch:
+    inputs:
+      name:
+        description: 'Person to greet'
+        required: true
+        default: 'World'
     push:
         # push tag时触发
         tags:
@@ -55,9 +61,9 @@ jobs:
                   KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
                   KEY_PASSWORD: ${{ secrets.KEY_PASSWORD}}
 
-            - name: 发布
-              uses: ncipollo/release-action@v1
-              with:
-                  artifacts: "build/app/outputs/flutter-apk/app-*.apk"
-                  token: ${{ secrets.GIT_TOKEN }}
-                  allowUpdates: true
+            # - name: 发布
+            #   uses: ncipollo/release-action@v1
+            #   with:
+            #       artifacts: "build/app/outputs/flutter-apk/app-*.apk"
+            #       token: ${{ secrets.GIT_TOKEN }}
+            #       allowUpdates: true
