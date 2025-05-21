@@ -15,6 +15,18 @@ flutter版本不兼容。预测使用的Flutter=3.27.1，Gradle=gradle-8.10.2-al
 - [] 滑动浏览模式改为翻页浏览
 - [] 修改显示分辨率
 
+## 本地编译过程（只包含Windows@AndroidStudio->Android）端
+- 环境1 AS安装，使用版本24.1.2，插件包括Dart，Flutter，Gradle，均为最新版，AndroidSDK包括35/34/33/NDK25.1/，BuildTool35/34/33，CLI16.0，CMake4/USBdriver/SDK-PT
+- Flutter=3.27.1，安装后修改两个文件换源，并运行`flutter doctor`和`flutter doctor --android-licenses`
+- 环境变量，设置`GRADLE_USER_HOME`为和项目文件同盘符的文件夹，用于系统放置所有编译文件
+- 环境变量，设置`GRADLE_HOME`为该版本gradle文件目录`*\gradle-8.10.2`
+- 环境变量，`JAVA_HOME`为java17的母目录
+- 环境变量，`PUB_CACHE`为和项目文件同盘符的文件夹
+- AS打开项目，打开`pubspec.yaml`文件，`upgrade`依赖
+- AS打开安卓子项目，修改app/build.gradle，版本号统一改为java1.8，自动下载依赖和编译，生成编译文件
+- 生成后打开\pub_cache\hosted\pub.flutter-io.cn\shared_preferences_android-2.4.7\android\build.gradle，同样统一为java1.8
+- 回到项目，连接设备，编译
+
 **Forked from [nyne](https://github.com/wgh136), provide extended support & fix, no guaranteed roadmap.**
 
 ## Download
