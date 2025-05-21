@@ -3,11 +3,6 @@ name: build_apk
 # action事件触发
 on:
     workflow_dispatch:
-    inputs:
-      name:
-        description: 'Person to greet'
-        required: true
-        default: 'World'
     push:
         # push tag时触发
         tags:
