@@ -7,6 +7,14 @@
 
 A comic app with multiple sources built with flutter.
 
+## 当前问题
+
+flutter版本不兼容。预测使用的Flutter=3.27.1，Gradle=gradle-8.10.2-all，其它依赖未知
+墨水屏版本需求：
+- [] 低刷新甚至不刷新
+- [] 滑动浏览模式改为翻页浏览
+- [] 修改显示分辨率
+
 **Forked from [nyne](https://github.com/wgh136), provide extended support & fix, no guaranteed roadmap.**
 
 ## Download
