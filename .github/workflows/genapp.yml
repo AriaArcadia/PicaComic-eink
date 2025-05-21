@@ -16,7 +16,7 @@ jobs:
 
         # 每个jobs中可以有多个steps
         steps:
-            - name: 代码迁出
+            - name: 拉取代码
               uses: actions/checkout@v3
 
             - name: 构建Java环境
@@ -27,7 +27,7 @@ jobs:
                   token: ${{secrets.GIT_TOKEN}}
 
             - name: 检查缓存
-              uses: actions/cache@v2
+              uses: actions/cache@v4
               id: cache-flutter
               with:
                   path: /root/flutter-sdk # Flutter SDK 的路径
@@ -44,11 +44,14 @@ jobs:
               run: flutter pub get
 
             - name: 解码生成 jks
-              run: echo $KEYSTORE_BASE64 | base64 -di > android/app/vvex.jks
+              run: echo $KEYSTORE_BASE64 | base64 -di > android/app/keystore.jks
               env:
                   KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
-            - name: flutter build apk
+            - name: 修改错误kotlin
+              run: sed -i '13s/^.*$/jvmTarget = '\''1.8'\''/' "${PUB_CACHE}/hosted/pub.flutter-io.cn/shared_preferences_android-2.4.7/android/build.gradle"
+
+            - name: flutter build apk --release
               # 对应 android/app/build.gradle signingConfigs中的配置项
               run: flutter build apk --release --split-per-abi
               env:
@@ -56,9 +59,8 @@ jobs:
                   KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
                   KEY_PASSWORD: ${{ secrets.KEY_PASSWORD}}
 
-            # - name: 发布
-            #   uses: ncipollo/release-action@v1
-            #   with:
-            #       artifacts: "build/app/outputs/flutter-apk/app-*.apk"
-            #       token: ${{ secrets.GIT_TOKEN }}
-            #       allowUpdates: true
+            - name: 发布apk
+              uses: ncipollo/release-action@v1.5.0
+              with:
+                  artifacts: "build/app/outputs/apk/release/*.apk"
+                  token: ${{ secrets.RELEASE_TOKEN }}
