@@ -39,17 +39,25 @@ jobs:
               with:
                   flutter-version: 3.27.1
                   channel: stable
+#            - name: Gradle download
+#              use: gradle/gradle-build-action@v2
 
             - name: 下载项目依赖
               run: flutter pub get
+
+#            - name: Build with Gradle
+#              run: |
+#                cd android
+#                ./gradlew build
+#                cd ..
 
             - name: 解码生成 jks
               run: echo $KEYSTORE_BASE64 | base64 -di > android/app/keystore.jks
               env:
                   KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
-            - name: 修改错误kotlin
-              run: sed -i '13s/^.*$/jvmTarget = '\''1.8'\''/' "${PUB_CACHE}/hosted/pub.flutter-io.cn/shared_preferences_android-2.4.7/android/build.gradle"
+#            - name: 修改错误kotlin
+#              run: sed -i '13s/^.*$/jvmTarget = '\''1.8'\''/' "${PUB_CACHE}/hosted/pub.flutter-io.cn/shared_preferences_android-2.4.7/android/build.gradle"
 
             - name: flutter build apk --release
               # 对应 android/app/build.gradle signingConfigs中的配置项
