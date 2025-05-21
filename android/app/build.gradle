@@ -41,10 +41,13 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+//        sourceCompatibility JavaVersion.VERSION_17
+//        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
         jvmTarget = '1.8'
+//        jvmTarget = '17'
     }
 
     sourceSets {
@@ -81,6 +84,7 @@ android {
         release {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.release
+//            signingConfig null
             applicationVariants.all { variant ->
                 variant.outputs.all { output ->
                     def abi = output.getFilter(com.android.build.OutputFile.ABI)
