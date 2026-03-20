@@ -1,0 +1,80 @@
+name: Build APK
+
+on:
+  workflow_dispatch:          # 只保留手动触发
+    # inputs:               # 可选：未来加手动输入版本号、描述等
+    #   version:
+    #     description: 'Release version (e.g. v1.2.3)'
+    #     required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4   # 升级到 v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.5'   # 或保持 3.41.5，如果你确定要固定这个版本
+          channel: stable
+          cache: true                 # 自动缓存 pub-cache 和 Flutter SDK（推荐！）
+
+      # 如果你不用 flutter-action 的 cache: true，可以手动缓存
+      # - name: Cache pub get
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.pub-cache
+      #     key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+      #     restore-keys: ${{ runner.os }}-pub-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Prepare Android signing
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/keystore.jks
+          {
+            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}"
+            echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
+            echo "keyAlias=${{ secrets.KEY_ALIAS }}"
+            echo "storeFile=keystore.jks"
+          } > android/key.properties
+
+      - name: Build APK (release + split per abi)
+        run: flutter build apk --release --split-per-abi --verbose
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: pica-apks
+          path: build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
+          compression-level: 6
+          retention-days: 14
+
+      # 只在手动 dispatch 且输入了版本号时才创建 release（可选）
+      # 或者你也可以每次手动 dispatch 都生成一个 nightly release
+      - name: Create or Update Release
+        if: github.event_name == 'workflow_dispatch'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: nightly
+          name: Nightly Build ${{ github.run_number }}
+          body: |
+            Auto-generated from commit ${{ github.sha }}
+            Triggered manually on ${{ github.event.repository.updated_at }}
+          artifacts: build/app/outputs/flutter-apk/*.apk
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          replacesArtifacts: true
+          makeLatest: true          # 让这个 release 成为 “Latest” 标记
+          prerelease: true
