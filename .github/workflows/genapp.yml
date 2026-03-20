@@ -53,7 +53,7 @@ jobs:
 
             - name: Prepare Android signing files
               run: |
-                echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/keystore.jks
+                echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
                 echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
                 echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
                 echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
