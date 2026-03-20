@@ -59,7 +59,12 @@ jobs:
                 echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
                 echo "storeFile=keystore.jks" >> android/key.properties   # 相对 android/ 目录
               working-directory: .   # 或你的项目根
-
+            - name: Debug signing files
+              run: |
+                ls -la android/
+                ls -la android/app/ || true
+                cat android/key.properties || true
+                
 #            - name: 修改错误kotlin
 #              run: sed -i '13s/^.*$/jvmTarget = '\''1.8'\''/' "${PUB_CACHE}/hosted/pub.flutter-io.cn/shared_preferences_android-2.4.7/android/build.gradle"
 
