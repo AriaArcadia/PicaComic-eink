@@ -75,6 +75,12 @@ jobs:
                   KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
                   KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
                   KEY_PASSWORD: ${{ secrets.KEY_PASSWORD}}
+            - name: Check built APKs
+              if: always()  # 即使失败也跑
+              run: |
+                find build/app/outputs -type f -name "*.apk" || echo "No APK found"
+                ls -la build/app/outputs/flutter-apk/ || true
+                ls -la build/app/outputs/apk/ || true  # 旧路径兼容
 
             - name: 发布apk
               uses: ncipollo/release-action@v1.5.0
